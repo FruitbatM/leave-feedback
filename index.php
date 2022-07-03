@@ -1,7 +1,7 @@
 <?php include 'includes/header.php'; ?>
 
-<!-- Error handling  -->
 <?php
+// Set variables to an empty values
 $name = $email = $body = '';
 $nameErr = $emailErr = $bodyErr = '';
 
@@ -11,21 +11,46 @@ if (isset($_POST['submit'])) {
   if (empty($_POST['name'])) {
     $nameErr = 'Name is required';
   } else {
-    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $name = filter_input(
+      INPUT_POST,
+      'name',
+      FILTER_SANITIZE_FULL_SPECIAL_CHARS
+    );
   }
 
   // Validate email
   if (empty($_POST['email'])) {
     $emailErr = 'Email is required';
   } else {
-    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+    $email = filter_input(
+      INPUT_POST,
+      'email',
+      FILTER_SANITIZE_EMAIL
+    );
   }
 
   // Validate body
   if (empty($_POST['body'])) {
     $bodyErr = 'Feedback is required';
   } else {
-    $email = filter_input(INPUT_POST, 'feedback', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $email = filter_input(
+      INPUT_POST,
+      'feedback',
+      FILTER_SANITIZE_FULL_SPECIAL_CHARS
+    );
+  }
+
+  if (empty($nameErr) && empty($emailErr) && ($bodyErr)) {
+    // Add to the database
+    $sql = "INSERT INTO feedback (name, email, body) VALUES ('$name', '$email', '$body')";
+
+    if (mysqli_query($conn, $sql)) {
+      // Success, then redirect
+      header('Location: feedback.php');
+    } else {
+      // Error
+      echo 'Error: ' . mysqli_error($conn);
+    }
   }
 }
 ?>
